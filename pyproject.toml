@@ -1,0 +1,18 @@
+[project]
+name = "churn-ml"
+version = "0.1.0"
+description = "Churn prediction project"
+authors = [{name = "Seu Grupo"}]
+
+dependencies = [
+    "pandas",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "jupyter",
+    "joblib",
+    "openpyxl"
+]
+
+[tool.ruff]
+line-length = 88
