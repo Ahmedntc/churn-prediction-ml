@@ -209,9 +209,5 @@ __marimo__/
 
 # 
 data/raw/
-models/*.pt
-models/*.pkl
-
 .ipynb_checkpoints/
-
 mlruns/
