@@ -8,5 +8,6 @@ dependencies = [
     "seaborn",
     "jupyter",
     "joblib",
-    "openpyxl"
+    "openpyxl",
+    "mlflow"
 ]
