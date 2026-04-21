@@ -211,3 +211,4 @@ __marimo__/
 data/raw/
 .ipynb_checkpoints/
 mlruns/
+mlflow.db
