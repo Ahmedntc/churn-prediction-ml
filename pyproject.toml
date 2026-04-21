@@ -1,13 +1,39 @@
 [project]
 name = "churn-ml"
 version = "0.1.0"
+requires-python = ">=3.10"
 dependencies = [
     "pandas",
+    "numpy",
     "scikit-learn",
     "matplotlib",
     "seaborn",
     "jupyter",
     "joblib",
     "openpyxl",
-    "mlflow"
+    "mlflow",
+    "torch",
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "httpx",
+    "ruff",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
