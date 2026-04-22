@@ -30,7 +30,7 @@ from src.data.preprocess import (
 DATA_PATH = pathlib.Path("data/processed/telco_clean.csv")
 MODELS_DIR = pathlib.Path("models")
 MODELS_DIR.mkdir(exist_ok=True)
-
+FIXED_SEED = 12
 EXPERIMENT_NAME = "churn-baselines"
 CV_FOLDS = 5
 
@@ -76,7 +76,7 @@ def logTraining(
     with mlflow.start_run(run_name=name):
 
         # Validação cruzada
-        cv = StratifiedKFold(n_splits=CV_FOLDS, shuffle=True, random_state=12)
+        cv = StratifiedKFold(n_splits=CV_FOLDS, shuffle=True, random_state=FIXED_SEED)
         cv_results = cross_validate(
             pipeline,
             X_train,
@@ -100,7 +100,7 @@ def logTraining(
         mlflow.log_params(params)
         mlflow.log_param("dataset_hash", data_hash)
         mlflow.log_param("cv_folds", CV_FOLDS)
-        mlflow.log_param("random_state", 12)
+        mlflow.log_param("random_state", FIXED_SEED)
 
         model_path = MODELS_DIR / f"{name.lower().replace(' ', '_')}.joblib"
         joblib.dump(pipeline, model_path)
@@ -112,8 +112,8 @@ def logTraining(
 
 
 if __name__ == "__main__":
-    rand_seed = 12
-    np.random.seed(rand_seed)
+
+    np.random.seed(FIXED_SEED)
 
     df = loadData(DATA_PATH)
     X, y = prepareFeats(df)
@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
     dummy_pipeline = Pipeline([
         ("preprocessor", buildPreprocessor()),
-        ("classifier", DummyClassifier(strategy="most_frequent", random_state=rand_seed)),
+        ("classifier", DummyClassifier(strategy="most_frequent", random_state=FIXED_SEED)),
     ])
     logTraining(
         name="DummyClassifier",
@@ -143,7 +143,7 @@ if __name__ == "__main__":
                 C=1.0,
                 class_weight="balanced",
                 max_iter=1000,
-                random_state=rand_seed,
+                random_state=FIXED_SEED,
                 solver="lbfgs",
             ),
         ),

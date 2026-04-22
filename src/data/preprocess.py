@@ -5,6 +5,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
+
+FIXED_SEED = 12
 #colunas numericas
 NUMERIC_FEATURES: list[str] = [
     "Tenure Months",
@@ -73,6 +75,6 @@ def splitData(X: pd.DataFrame, y: pd.Series, test_size: float = 0.2,) -> Tuple[p
         y,
         test_size=test_size,
         #seed fixa
-        random_state=12,
+        random_state=FIXED_SEED,
         stratify=y,
     )
