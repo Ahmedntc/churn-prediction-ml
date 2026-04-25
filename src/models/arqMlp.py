@@ -130,7 +130,7 @@ class ChurnMLPClassifier(BaseEstimator, ClassifierMixin):
         self.model_.load_state_dict(best_state)
         return self       
  
- 
+    # predict_proba retorna a probabilidade de cada classe (churner e não churner), e predict retorna a classe prevista (0 ou 1) 
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         X_t = torch.tensor(X, dtype=torch.float32).to(self.device_)
         probs = self.model_.preverProba(X_t).cpu().numpy()

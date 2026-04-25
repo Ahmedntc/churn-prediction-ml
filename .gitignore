@@ -212,3 +212,5 @@ data/raw/
 .ipynb_checkpoints/
 mlruns/
 mlflow.db
+models/*.pt
+models/*.joblib
