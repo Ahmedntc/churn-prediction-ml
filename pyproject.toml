@@ -1,6 +1,7 @@
 [project]
 name = "churn-ml"
 version = "0.1.0"
+description = "Rede neural para previsão de churn com pipeline profissional end-to-end"
 requires-python = ">=3.10"
 dependencies = [
     "pandas",
@@ -16,6 +17,7 @@ dependencies = [
     "fastapi",
     "uvicorn[standard]",
     "pydantic",
+    "pandera",
 ]
 
 [project.optional-dependencies]
@@ -35,5 +37,6 @@ select = ["E", "F", "W", "I", "N", "UP"]
 ignore = ["E501"]
 
 [tool.pytest.ini_options]
+pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = "-v --tb=short"
