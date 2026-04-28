@@ -26,8 +26,8 @@ from src.data.preprocess import (
     splitData,
 )
 
-DATA_PATH = pathlib.Path("data/processed/telco_clean.csv")
-MODELS_DIR = pathlib.Path("models")
+DATA_PATH = pathlib.Path("dataframe/processed/telco_clean.csv")
+MODELS_DIR = pathlib.Path("modeldumps")
 MODELS_DIR.mkdir(exist_ok=True)
 FIXED_SEED = 12
 EXPERIMENT_NAME = "churn-baselines"

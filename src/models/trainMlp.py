@@ -17,8 +17,8 @@ from sklearn.pipeline import Pipeline
 from src.data.preprocess import buildPreprocessor, loadData, prepareFeats, splitData
 from models.arqMlp import ChurnMLPClassifier
 
-DATA_PATH = pathlib.Path("data/processed/telco_clean.csv")
-MODELS_DIR = pathlib.Path("models")
+DATA_PATH = pathlib.Path("dataframe/processed/telco_clean.csv")
+MODELS_DIR = pathlib.Path("modeldumps")
 MODELS_DIR.mkdir(exist_ok=True)
 EXPERIMENT_NAME = "churn-mlp"
 

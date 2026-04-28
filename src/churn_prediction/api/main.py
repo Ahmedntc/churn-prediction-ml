@@ -16,7 +16,7 @@ app = FastAPI(
 app.add_middleware(LatencyMiddleware)
 
 predictor = ChurnPredictor(
-    model_path="models/randomforest.joblib"
+    model_path="modeldumps/pipeline_mlp_lr0_01_bs64_patience10.joblib"
 )
 
 

@@ -19,9 +19,9 @@ O projeto cobre todo o ciclo de vida de ML:
 ```text
 churn-prediction-ml/
 │
-├── data/                # Dataset
-├── notebooks/           # Análises exploratórias (EDA)
-├── models/              # Modelos treinados (.joblib / .pt)
+├── dataframe/                # Dataset limpo e raw
+├── notebooks/           # Análises exploratórias (EDA) e notebook comparativo entre a nossa mlp e baselines
+├── modeldumps/              # Modelos treinados (.joblib / .pt) são salvos aqui
 ├── tests/               # Testes automatizados (pytest)
 ├── docs/                # Documentação
 │
@@ -31,14 +31,15 @@ churn-prediction-ml/
 │       ├── inference/   # Lógica de predição
 │       ├── pipelines/   # Pré-processamento (sklearn)
 │       └── utils/       # Utilitários (ex: logging)
-│
+│   └── data/ # Onde ocorre o preprocessamento de dados, manipulamos o dataset limpo, fazemos o split entre test e treino, preparamos as feats
+│   └── models/ # Treinamento das baselines e da mlp  
 ├── README.md
 ├── pyproject.toml
 └── .gitignore
 
 🚀 Como rodar o projeto
     1. Criar ambiente virtual
-        python -m venv .venv
+        python3 -m venv .venv
 
     2. Ativar ambiente virtual
     Windows (PowerShell):
@@ -60,13 +61,12 @@ Resultado esperado:
 
 
 🤖 Treinar modelos baseline
-python -m src.models.train_baseline
+python3 -m src.models.trainBaseline
+python3 -m src.models.trainMlp
 
-📊 Visualizar experimentos no MLflow
-mlflow ui
-
-Acesse no navegador:
-
+📊 Visualizar métricas no MLflow
+1 > bash: mlflow ui
+2 > Acesse no navegador:
 http://localhost:5000
 
 🌐 Rodar API de inferência

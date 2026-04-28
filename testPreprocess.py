@@ -1,6 +1,6 @@
 from src.data.preprocess import loadData, prepareFeats, buildPreprocessor, splitData
 
-df = loadData("data/processed/telco_clean.csv")
+df = loadData("dataframe/processed/telco_clean.csv")
 X, y = prepareFeats(df)
 X_train, X_test, y_train, y_test = splitData(X, y)
 
