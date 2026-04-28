@@ -29,7 +29,6 @@ churn-prediction-ml/
 │   └── churn_prediction/
 │       ├── api/         # API FastAPI (endpoints, schemas, middleware)
 │       ├── inference/   # Lógica de predição
-│       ├── pipelines/   # Pré-processamento (sklearn)
 │       └── utils/       # Utilitários (ex: logging)
 │   └── data/ # Onde ocorre o preprocessamento de dados, manipulamos o dataset limpo, fazemos o split entre test e treino, preparamos as feats
 │   └── models/ # Treinamento das baselines e da mlp  
