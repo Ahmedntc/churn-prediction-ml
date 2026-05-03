@@ -1,5 +1,6 @@
 #Smoke test — verifica que o modelo carrega e faz uma predição sem quebrar.
 from churn_prediction.inference.predictor import ChurnPredictor
+
 SAMPLE_PAYLOAD = {
     "Gender": "Male",
     "Senior Citizen": 0,
@@ -21,16 +22,16 @@ SAMPLE_PAYLOAD = {
     "Monthly Charges": 89.9,
     "Total Charges": 1024.5,
 }
-def test_smokeLoadModel():
+def test_smoke_load_model():
     predictor = ChurnPredictor("modeldumps/pipeline_mlp_lr0_01_bs64_patience10.joblib")
     assert predictor.model is not None
-    
-def test_smokeRetornaResult():
+
+def test_smoke_retorna_result():
     predictor = ChurnPredictor("modeldumps/pipeline_mlp_lr0_01_bs64_patience10.joblib")
     result = predictor.predict(SAMPLE_PAYLOAD)
     assert result is not None
-    
-def test_smokeOutput():
+
+def test_smoke_output():
     predictor = ChurnPredictor("modeldumps/pipeline_mlp_lr0_01_bs64_patience10.joblib")
     result = predictor.predict(SAMPLE_PAYLOAD)
     assert "churn_probability" in result

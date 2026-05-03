@@ -1,7 +1,8 @@
 import logging
 import sys
 
-def setupLogger(name: str) -> logging.Logger:
+
+def setup_logger(name: str) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.propagate = False
     if logger.handlers:

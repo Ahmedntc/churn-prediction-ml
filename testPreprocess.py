@@ -1,10 +1,10 @@
-from src.data.preprocess import loadData, prepareFeats, buildPreprocessor, splitData
+from src.data.preprocess import load_data, prepare_feats, build_preprocessor, split_data
 
-df = loadData("dataframe/processed/telco_clean.csv")
-X, y = prepareFeats(df)
-X_train, X_test, y_train, y_test = splitData(X, y)
+df = load_data("dataframe/processed/telco_clean.csv")
+X, y = prepare_feats(df)
+X_train, X_test, y_train, y_test = split_data(X, y)
 
-preprocessor = buildPreprocessor()
+preprocessor = build_preprocessor()
 X_train_proc = preprocessor.fit_transform(X_train)
 X_test_proc = preprocessor.transform(X_test)
 

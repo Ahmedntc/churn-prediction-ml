@@ -1,10 +1,12 @@
 #Testes de schema — validação do Pydantic e Pandera.
-import pytest
 import pandas as pd
 import pandera.pandas as pa
-from pandera.pandas import Column, Check, DataFrameSchema
+import pytest
+from pandera.pandas import Check, Column, DataFrameSchema
 from pydantic import ValidationError
+
 from churn_prediction.api.schemas import PredictRequest
+
 SAMPLE_PAYLOAD = {
     "Gender": "Male",
     "Senior Citizen": 0,
@@ -48,19 +50,19 @@ DATAFRAME_SCHEMA = DataFrameSchema({
     "Payment Method": Column(str),
 })
 
-def testSchemaValido():
+def test_schema_valido():
     payload = PredictRequest(**SAMPLE_PAYLOAD)
     assert payload.tenure == 12
     assert payload.monthly_charges == 89.9
 
 
-def testPredictCobrancaNeg():
+def test_predict_cobranca_neg():
     invalid = SAMPLE_PAYLOAD.copy()
     invalid["Monthly Charges"] = -10.0
     with pytest.raises(ValidationError):
         PredictRequest(**invalid)
 
-def testPanderaValido():
+def test_pandera_valido():
     df = pd.DataFrame([{
         "Tenure Months": 12.0,
         "Monthly Charges": 89.9,
@@ -84,7 +86,7 @@ def testPanderaValido():
     }])
     DATAFRAME_SCHEMA.validate(df)
 
-def testPanderaCobrancaNeg():
+def test_pandera_cobranca_neg():
     df = pd.DataFrame([{
         "Tenure Months": 12.0,
         "Monthly Charges": -10.0,

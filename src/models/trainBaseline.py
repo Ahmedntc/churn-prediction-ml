@@ -1,15 +1,16 @@
 from __future__ import annotations
+
 import hashlib
 import pathlib
+
 import joblib
 import mlflow
 import mlflow.sklearn
 import numpy as np
 import pandas as pd
 from sklearn.dummy import DummyClassifier
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import (
     average_precision_score,
     f1_score,
@@ -19,15 +20,17 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import StratifiedKFold, cross_validate
 from sklearn.pipeline import Pipeline
-from src.data.preprocess import (
-    buildPreprocessor,
-    loadData,
-    prepareFeats,
-    splitData,
-)
-from src.utils.logging import setupLogger
-logger = setupLogger(__name__)
+from sklearn.tree import DecisionTreeClassifier
 
+from src.data.preprocess import (
+    build_preprocessor,
+    load_data,
+    prepare_feats,
+    split_data,
+)
+from src.utils.logging import setup_logger
+
+logger = setup_logger(__name__)
 
 DATA_PATH = pathlib.Path("dataframe/processed/telco_clean.csv")
 MODELS_DIR = pathlib.Path("modeldumps")
@@ -35,12 +38,12 @@ MODELS_DIR.mkdir(exist_ok=True)
 FIXED_SEED = 12
 EXPERIMENT_NAME = "churn-baselines"
 CV_FOLDS = 5
-def dsHash(path: pathlib.Path) -> str:
+def ds_hash(path: pathlib.Path) -> str:
     #Gerar hash do arquivo CSV para versionamento no MLflow.
     return hashlib.md5(path.read_bytes()).hexdigest()
 
 
-def computarMetricas(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray) -> dict:
+def computar_metricas(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray) -> dict:
     """
     Recall  não perder churners que é o mais importante para o negócio mesmo que isso signifique ter mais falsos positivos
     Precision  evitar desperdiçar ações de retenção em quem não ia cancelar
@@ -57,12 +60,12 @@ def computarMetricas(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray)
     }
 
 #Treina pipeline, avalia e registra tudo no MLflow.
-def logTraining(
+def log_training(
     name: str,
     pipeline: Pipeline,
-    X_train: pd.DataFrame,
+    x_train: pd.DataFrame,
     y_train: pd.Series,
-    X_test: pd.DataFrame,
+    x_test: pd.DataFrame,
     y_test: pd.Series,
     params: dict,
     data_hash: str,
@@ -71,24 +74,24 @@ def logTraining(
     with mlflow.start_run(run_name=name):
         # Validação cruzada
         cv = StratifiedKFold(n_splits=CV_FOLDS, shuffle=True, random_state=FIXED_SEED)
-        cvResults = cross_validate(
+        cv_results = cross_validate(
             pipeline,
-            X_train,
+            x_train,
             y_train,
             cv=cv,
             scoring=["roc_auc", "average_precision", "f1", "recall"],
         )
-        for key, values in cvResults.items():
+        for key, values in cv_results.items():
             if key.startswith("test_"):
                 metric_name = key.replace("test_", "cv_")
                 mlflow.log_metric(metric_name, float(values.mean()))
                 mlflow.log_metric(f"{metric_name}_std", float(values.std()))
 
-        # Treino final e avaliação no teste 
-        pipeline.fit(X_train, y_train)
-        y_pred = pipeline.predict(X_test)
-        y_prob = pipeline.predict_proba(X_test)[:, 1]
-        metrics = computarMetricas(y_test.values, y_pred, y_prob)
+        # Treino final e avaliação no teste
+        pipeline.fit(x_train, y_train)
+        y_pred = pipeline.predict(x_test)
+        y_prob = pipeline.predict_proba(x_test)[:, 1]
+        metrics = computar_metricas(y_test.values, y_pred, y_prob)
         mlflow.log_metrics({f"test_{k}": v for k, v in metrics.items()})
 
         mlflow.log_params(params)
@@ -109,28 +112,28 @@ if __name__ == "__main__":
     #baselines lineares e arvores
 
     np.random.seed(FIXED_SEED)
-    df = loadData(DATA_PATH)
-    X, y = prepareFeats(df)
-    X_train, X_test, y_train, y_test = splitData(X, y)
-    data_hash = dsHash(DATA_PATH)
+    df = load_data(DATA_PATH)
+    x, y = prepare_feats(df)
+    x_train, X_test, y_train, y_test = split_data(x, y)
+    data_hash = ds_hash(DATA_PATH)
 
-    dummyPipeline = Pipeline([
-        ("preprocessor", buildPreprocessor()),
+    dummy_pipeline = Pipeline([
+        ("preprocessor", build_preprocessor()),
         ("classifier", DummyClassifier(strategy="most_frequent", random_state=FIXED_SEED)),
     ])
-    logTraining(
+    log_training(
         name="DummyClassifier",
-        pipeline=dummyPipeline,
-        X_train=X_train,
+        pipeline=dummy_pipeline,
+        x_train=x_train,
         y_train=y_train,
-        X_test=X_test,
+        x_test=X_test,
         y_test=y_test,
         params={"strategy": "most_frequent"},
         data_hash=data_hash,
     )
 
-    regLogPipeline = Pipeline([
-        ("preprocessor", buildPreprocessor()),
+    reg_log_pipeline = Pipeline([
+        ("preprocessor", build_preprocessor()),
         (
             "classifier",
             LogisticRegression(
@@ -142,12 +145,12 @@ if __name__ == "__main__":
             ),
         ),
     ])
-    logTraining(
+    log_training(
         name="LogisticRegression",
-        pipeline=regLogPipeline,
-        X_train=X_train,
+        pipeline=reg_log_pipeline,
+        x_train=x_train,
         y_train=y_train,
-        X_test=X_test,
+        x_test=X_test,
         y_test=y_test,
         params={
             "C": 1.0,
@@ -157,28 +160,28 @@ if __name__ == "__main__":
         },
         data_hash=data_hash,
     )
-    
-    arvDecisaoPipeline = Pipeline([
-        ("preprocessor", buildPreprocessor()),
+
+    arv_decisao_pipeline = Pipeline([
+        ("preprocessor", build_preprocessor()),
         ("classifier", DecisionTreeClassifier(
             class_weight="balanced",
             max_depth=10,
             random_state=FIXED_SEED,
         )),
     ])
-    logTraining(
+    log_training(
         name="DecisionTree",
-        pipeline=arvDecisaoPipeline,
-        X_train=X_train,
+        pipeline=arv_decisao_pipeline,
+        x_train=x_train,
         y_train=y_train,
-        X_test=X_test,
+        x_test=X_test,
         y_test=y_test,
         params={"max_depth": 10, "class_weight": "balanced"},
         data_hash=data_hash,
     )
 
-    randForestPipeline = Pipeline([
-        ("preprocessor", buildPreprocessor()),
+    rand_forest_pipeline = Pipeline([
+        ("preprocessor", build_preprocessor()),
         ("classifier", RandomForestClassifier(
             n_estimators=100,
             class_weight="balanced",
@@ -186,19 +189,19 @@ if __name__ == "__main__":
             random_state=FIXED_SEED,
         )),
     ])
-    logTraining(
+    log_training(
         name="RandomForest",
-        pipeline=randForestPipeline,
-        X_train=X_train,
+        pipeline=rand_forest_pipeline,
+        x_train=x_train,
         y_train=y_train,
-        X_test=X_test,
+        x_test=X_test,
         y_test=y_test,
         params={"n_estimators": 100, "max_depth": 10, "class_weight": "balanced"},
         data_hash=data_hash,
     )
 
-    gradBoostPipeline = Pipeline([
-        ("preprocessor", buildPreprocessor()),
+    grad_boost_pipeline = Pipeline([
+        ("preprocessor", build_preprocessor()),
         ("classifier", GradientBoostingClassifier(
             n_estimators=100,
             learning_rate=0.1,
@@ -206,12 +209,12 @@ if __name__ == "__main__":
             random_state=FIXED_SEED,
         )),
     ])
-    logTraining(
+    log_training(
         name="GradientBoosting",
-        pipeline=gradBoostPipeline,
-        X_train=X_train,
+        pipeline=grad_boost_pipeline,
+        x_train=x_train,
         y_train=y_train,
-        X_test=X_test,
+        x_test=X_test,
         y_test=y_test,
         params={"n_estimators": 100, "learning_rate": 0.1, "max_depth": 5},
         data_hash=data_hash,

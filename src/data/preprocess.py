@@ -1,10 +1,9 @@
-from typing import Tuple
+
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-
 
 FIXED_SEED = 12
 #colunas numericas
@@ -33,18 +32,18 @@ CATEGORICAL_FEATURES: list[str] = [
     "Payment Method",
 ]
 
-def loadData(path: str) -> pd.DataFrame:
+def load_data(path: str) -> pd.DataFrame:
     return pd.read_csv(path)
 
 
-def prepareFeats(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.Series]:
+def prepare_feats(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
     #x sao todas  as features menos o churn value ou seja é o que o modelo vai usar para aprender, y é a coluna target
-    X = df.drop(columns=["Churn Value"])
+    x = df.drop(columns=["Churn Value"])
     y = df["Churn Value"].astype(int)
-    return X, y
+    return x, y
 
 
-def buildPreprocessor() -> ColumnTransformer:
+def build_preprocessor() -> ColumnTransformer:
 
     #Colocando as variaveis numericas em uma mesma escalar para evoitar que uma variavel tenha mais peso que a outra
     numeric_pipeline = Pipeline(
@@ -52,7 +51,7 @@ def buildPreprocessor() -> ColumnTransformer:
             ("scaler", StandardScaler()),
         ]
     )
-    # tranformando as variaveis categoricas em variaveis binarias 
+    # tranformando as variaveis categoricas em variaveis binarias
     categorical_pipeline = Pipeline(
         steps=[
             ("encoder", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
@@ -69,9 +68,9 @@ def buildPreprocessor() -> ColumnTransformer:
     return preprocessor
 
 
-def splitData(X: pd.DataFrame, y: pd.Series, test_size: float = 0.2,) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+def split_data(x: pd.DataFrame, y: pd.Series, test_size: float = 0.2,) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     return train_test_split(
-        X,
+        x,
         y,
         test_size=test_size,
         #seed fixa

@@ -1,10 +1,10 @@
 import pathlib
-import torch
-import torch.nn as nn
-import numpy as np
+
 import joblib
 import mlflow
 import mlflow.pytorch
+import numpy as np
+import torch
 from sklearn.metrics import (
     average_precision_score,
     f1_score,
@@ -13,31 +13,33 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 from sklearn.pipeline import Pipeline
-from src.data.preprocess import buildPreprocessor, loadData, prepareFeats, splitData
+
 from models.arqMlp import ChurnMLPClassifier
-from src.utils.logging import setupLogger
-logger = setupLogger(__name__)
+from src.data.preprocess import build_preprocessor, load_data, prepare_feats, split_data
+from src.utils.logging import setup_logger
+
+logger = setup_logger(__name__)
 
 DATA_PATH = pathlib.Path("dataframe/processed/telco_clean.csv")
 MODELS_DIR = pathlib.Path("modeldumps")
 MODELS_DIR.mkdir(exist_ok=True)
 EXPERIMENT_NAME = "churn-mlp"
 
-# Testado com 1, 0.1, 0.01, 0.001 
+# Testado com 1, 0.1, 0.01, 0.001
 # 0.01 foi o melhor
 LEARNING_RATE = 1e-2
 MAX_EPOCHS = 100
-# Testado com 3, 5 e 10  
+# Testado com 3, 5 e 10
 # 10 foi o melhor
 PATIENCE = 10
-# Testado com 8, 16, 32, 64, 128 
+# Testado com 8, 16, 32, 64, 128
 # 64 foi o melhor
 BATCH_SIZE = 64
 
 FIXED_SEED = 12
 
 
-def setMetricas(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray) -> dict:
+def set_metricas(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray) -> dict:
     return {
         "recall": float(recall_score(y_true, y_pred, zero_division=0)),
         "precision": float(precision_score(y_true, y_pred, zero_division=0)),
@@ -52,12 +54,12 @@ if __name__ == "__main__":
     torch.manual_seed(FIXED_SEED)
     torch.cuda.manual_seed_all(FIXED_SEED)
 
-    df = loadData(DATA_PATH)
-    X, y = prepareFeats(df)
-    X_train, X_test, y_train, y_test = splitData(X, y)
+    df = load_data(DATA_PATH)
+    x, y = prepare_feats(df)
+    x_train, x_test, y_train, y_test = split_data(x, y)
 
     pipeline = Pipeline([
-        ("preprocessor", buildPreprocessor()),
+        ("preprocessor", build_preprocessor()),
         ("classifier", ChurnMLPClassifier(
             hidden_dims=[64, 32, 16],
             dropout_rate=0.3,
@@ -73,10 +75,10 @@ if __name__ == "__main__":
     lr_str = str(LEARNING_RATE).replace(".", "_")
 
     with mlflow.start_run(run_name=f"MLP_lr{lr_str}_bs{BATCH_SIZE}_patience{PATIENCE}"):
-        pipeline.fit(X_train, y_train)
-        preds = pipeline.predict(X_test)
-        probs = pipeline.predict_proba(X_test)[:, 1]
-        metrics = setMetricas(y_test.values, preds, probs)
+        pipeline.fit(x_train, y_train)
+        preds = pipeline.predict(x_test)
+        probs = pipeline.predict_proba(x_test)[:, 1]
+        metrics = set_metricas(y_test.values, preds, probs)
         mlflow.log_params({
             "batch_size": BATCH_SIZE,
             "learning_rate": LEARNING_RATE,

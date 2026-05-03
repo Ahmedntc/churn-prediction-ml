@@ -1,6 +1,8 @@
 #Testes da API FastAPI — endpoints /health e /predict.
 from fastapi.testclient import TestClient
+
 from churn_prediction.api.main import app
+
 client = TestClient(app)
 SAMPLE_PAYLOAD = {
     "gender": "Male",
@@ -24,17 +26,17 @@ SAMPLE_PAYLOAD = {
     "total_charges": 1024.5,
 }
 
-def testHealth():
+def test_health():
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
-def testPredict():
+def test_predict():
     response = client.post("/predict", json=SAMPLE_PAYLOAD)
     assert response.status_code == 200
 
 
-def testPredictFormat():
+def test_predict_format():
     response = client.post("/predict", json=SAMPLE_PAYLOAD)
     data = response.json()
     assert "churn_probability" in data
@@ -42,25 +44,22 @@ def testPredictFormat():
     assert "risk_level" in data
 
 
-def testProbabilidade():
+def test_probabilidade():
     response = client.post("/predict", json=SAMPLE_PAYLOAD)
     data = response.json()
     assert 0.0 <= data["churn_probability"] <= 1.0
 
 
-def testPrediction():
-
+def test_prediction():
     response = client.post("/predict", json=SAMPLE_PAYLOAD)
     data = response.json()
     assert data["churn_prediction"] in [0, 1]
 
-
-def testRiskLevel():
+def test_risk_level():
     response = client.post("/predict", json=SAMPLE_PAYLOAD)
     data = response.json()
     assert data["risk_level"] in ["low", "medium", "high"]
 
-
-def testPayloadInvalido():
+def test_payload_invalido():
     response = client.post("/predict", json={"invalid": "payload"})
     assert response.status_code == 422
