@@ -1,7 +1,7 @@
 #Testes da API FastAPI — endpoints /health e /predict.
 from fastapi.testclient import TestClient
 
-from churn_prediction.api.main import app
+from src.churn_prediction.api.main import app
 
 client = TestClient(app)
 SAMPLE_PAYLOAD = {
