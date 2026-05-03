@@ -13,9 +13,14 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 from sklearn.pipeline import Pipeline
-
 from src.data.preprocess import buildPreprocessor, loadData, prepareFeats, splitData
 from models.arqMlp import ChurnMLPClassifier
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    format='{"time":"%(asctime)s","level":"%(levelname)s","module":"%(name)s","message":"%(message)s"}',
+    level=logging.INFO
+)
 
 DATA_PATH = pathlib.Path("dataframe/processed/telco_clean.csv")
 MODELS_DIR = pathlib.Path("modeldumps")
@@ -88,5 +93,4 @@ if __name__ == "__main__":
 
         joblib.dump(pipeline, MODELS_DIR / f"pipeline_mlp_lr{lr_str}_bs{BATCH_SIZE}_patience{PATIENCE}.joblib")
 
-        print(f"roc_auc={metrics['roc_auc']:.4f} | recall={metrics['recall']:.4f} | f1={metrics['f1']:.4f} | pr_auc={metrics['pr_auc']:.4f}")
-        
+        logger.info("roc_auc=%.4f | recall=%.4f | f1=%.4f | pr_auc=%.4f", metrics['roc_auc'], metrics['recall'], metrics['f1'], metrics['pr_auc'])

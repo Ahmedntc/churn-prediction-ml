@@ -4,6 +4,14 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import train_test_split
 
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    format='{"time":"%(asctime)s","level":"%(levelname)s","module":"%(name)s","message":"%(message)s"}',
+    level=logging.INFO
+)
+
 class ChurnMLP(nn.Module):
     def __init__(
         self,
@@ -126,7 +134,7 @@ class ChurnMLPClassifier(BaseEstimator, ClassifierMixin):
 
             epoch += 1
 
-        print(f"Treino encerrado na época {epoch - 1}")
+        logger.info("Treino encerrado na época %d", epoch - 1)
         self.model_.load_state_dict(best_state)
         return self       
  

@@ -25,6 +25,13 @@ from src.data.preprocess import (
     prepareFeats,
     splitData,
 )
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    format='{"time":"%(asctime)s","level":"%(levelname)s","module":"%(name)s","message":"%(message)s"}',
+    level=logging.INFO
+)
 
 DATA_PATH = pathlib.Path("dataframe/processed/telco_clean.csv")
 MODELS_DIR = pathlib.Path("modeldumps")
@@ -98,7 +105,7 @@ def logTraining(
         mlflow.log_artifact(str(model_path))
         mlflow.sklearn.log_model(pipeline, artifact_path=name)
 
-        print(f"[{name}] test | roc_auc={metrics['roc_auc']:.4f} | pr_auc={metrics['pr_auc']:.4f} | recall={metrics['recall']:.4f} | f1={metrics['f1']:.4f}")
+        logger.info("[%s] test | roc_auc=%.4f | pr_auc=%.4f | recall=%.4f | f1=%.4f", name, metrics['roc_auc'], metrics['pr_auc'], metrics['recall'], metrics['f1'])
 
 
 
