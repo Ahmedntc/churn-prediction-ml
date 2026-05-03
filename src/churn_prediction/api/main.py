@@ -3,9 +3,9 @@ from fastapi import FastAPI
 from churn_prediction.api.middleware import LatencyMiddleware
 from churn_prediction.api.schemas import PredictRequest, PredictResponse
 from churn_prediction.inference.predictor import ChurnPredictor
-from churn_prediction.utils.logging import setup_logger
+from src.utils.logging import setupLogger
 
-logger = setup_logger(__name__)
+logger = setupLogger(__name__)
 
 app = FastAPI(
     title="Churn Prediction API",

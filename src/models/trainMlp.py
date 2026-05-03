@@ -15,12 +15,8 @@ from sklearn.metrics import (
 from sklearn.pipeline import Pipeline
 from src.data.preprocess import buildPreprocessor, loadData, prepareFeats, splitData
 from models.arqMlp import ChurnMLPClassifier
-import logging
-logger = logging.getLogger(__name__)
-logging.basicConfig(
-    format='{"time":"%(asctime)s","level":"%(levelname)s","module":"%(name)s","message":"%(message)s"}',
-    level=logging.INFO
-)
+from src.utils.logging import setupLogger
+logger = setupLogger(__name__)
 
 DATA_PATH = pathlib.Path("dataframe/processed/telco_clean.csv")
 MODELS_DIR = pathlib.Path("modeldumps")

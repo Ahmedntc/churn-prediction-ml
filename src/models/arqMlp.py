@@ -4,13 +4,8 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import train_test_split
 
-import logging
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(
-    format='{"time":"%(asctime)s","level":"%(levelname)s","module":"%(name)s","message":"%(message)s"}',
-    level=logging.INFO
-)
+from src.utils.logging import setupLogger
+logger = setupLogger(__name__)
 
 class ChurnMLP(nn.Module):
     def __init__(
