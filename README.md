@@ -35,59 +35,91 @@ churn-prediction-ml/
 ├── README.md
 ├── pyproject.toml
 └── .gitignore
+```
 
-🚀 Como rodar o projeto
-    1. Criar ambiente virtual
-        python3 -m venv .venv
+## Documentação (Etapa 4 — entrega final)
 
-    2. Ativar ambiente virtual
-    Windows (PowerShell):
+- **[Passo a passo do que falta](docs/PASSO_A_PASSO_ETAPA_4.md)** — checklist em português (Brasil) para fechar a entrega.
+- **[Model Card](docs/MODEL_CARD.md)** — desempenho, limitações, vieses e cenários de falha.
+- **[Arquitetura de deploy](docs/ARQUITETURA_DEPLOY.md)** — batch vs. tempo real e justificativa.
+- **[Plano de monitoramento](docs/MONITORAMENTO.md)** — métricas, alertas e playbook.
 
-      .venv\Scripts\Activate.ps1
+## Arquitetura (resumo)
 
-    Linux/Mac:
-    source .venv/bin/activate
+Dados em `dataframe/` → pré-processamento e treino em `src/` → artefatos em `modeldumps/` (não versionados) e experimentos no **MLflow** → inferência **em tempo real** via **FastAPI** (`churn_prediction.api.main`). Detalhes em [docs/ARQUITETURA_DEPLOY.md](docs/ARQUITETURA_DEPLOY.md).
 
-    3. Instalar dependências
-    pip install -e ".[dev]"
+## Como rodar o projeto
 
+Execute os comandos na **raiz** do repositório (`churn-prediction-ml/`, onde está o `pyproject.toml`).
 
-🧪 Rodar testes
+1. **Criar ambiente virtual**
+
+   ```bash
+   python -m venv .venv
+   ```
+
+2. **Ativar o ambiente**
+
+   - Windows (PowerShell): `.venv\Scripts\Activate.ps1`
+   - Linux/macOS: `source .venv/bin/activate`
+
+3. **Instalar dependências**
+
+   ```bash
+   pip install -e ".[dev]"
+   ```
+
+   Se a instalação falhar ao gerar bytecode no Windows, use: `pip install -e ".[dev]" --no-compile`.
+
+4. **Gerar o modelo servido pela API** (arquivos `.joblib` ficam em `modeldumps/` e não vão para o Git):
+
+   ```bash
+   python -m src.models.trainBaseline
+   python -m src.models.trainMlp
+   ```
+
+## Testes
+
+```bash
 pytest -v
+```
 
-Resultado esperado:
-6 passed
+Resultado esperado: **6 passed** (na raiz do projeto).
 
+## MLflow
 
-🤖 Treinar modelos baseline
-python3 -m src.models.trainBaseline
-python3 -m src.models.trainMlp
+```bash
+mlflow ui
+```
 
-📊 Visualizar métricas no MLflow
-1 > bash: mlflow ui
-2 > Acesse no navegador:
-http://localhost:5000
+Abra no navegador: http://localhost:5000
 
-🌐 Rodar API de inferência
+## API de inferência
+
+Na raiz do projeto, com o ambiente ativado:
+
+```bash
 uvicorn churn_prediction.api.main:app --reload
+```
 
-🔍 Endpoints disponíveis
-Health Check
-GET /health
+## Endpoints
 
-Resposta:
+| Método | Caminho | Descrição |
+|--------|---------|-----------|
+| GET | `/health` | Verificação de saúde |
+| POST | `/predict` | Predição de churn (corpo JSON validado pelo Pydantic) |
 
-{
-  "status": "ok"
-}
+Documentação interativa (Swagger): http://127.0.0.1:8000/docs
 
-Documentação interativa
-http://127.0.0.1:8000/docs
-Predição de churn
-POST /predict
+**Exemplo — `GET /health`**
 
-Exemplo de payload:
+```json
+{ "status": "ok" }
+```
 
+**Exemplo — corpo de `POST /predict`**
+
+```json
 {
   "Gender": "Male",
   "Senior Citizen": 0,
@@ -109,3 +141,16 @@ Exemplo de payload:
   "Monthly Charges": 89.9,
   "Total Charges": 1024.5
 }
+```
+
+## Entrega — vídeo (obrigatório)
+
+1. Grave o vídeo de **até 5 minutos** usando o método **STAR** (Situação, Tarefa, Ação, Resultado), conforme o enunciado do Tech Challenge.
+2. Publique em plataforma de sua escolha (YouTube não listado, Google Drive, Loom, etc.).
+3. **Cole o link aqui no README** (substitua o texto abaixo) e/ou coloque na descrição do repositório no GitHub:
+
+**Link do vídeo:** *[inserir URL]*
+
+## Entrega opcional (bônus)
+
+- **Deploy em nuvem** (AWS, Azure ou GCP) com URL pública da API — documente o endpoint em [docs/ARQUITETURA_DEPLOY.md](docs/ARQUITETURA_DEPLOY.md) e cole a URL aqui: *[opcional]*
