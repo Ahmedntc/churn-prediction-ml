@@ -40,13 +40,12 @@ Valores da **última run** consultada no experimento **`churn-mlp`** (métricas 
 
 | Métrica | Valor | Nota |
 |---------|--------|------|
-| **ROC-AUC** | **0,853** | Discriminação geral entre classes. |
-| **PR-AUC** | **0,678** | Adequada com classe churn minoritária. |
-| **Recall** | **0,789** | Proporção de churners reais identificados (alto recall costuma ser prioridade em retenção). |
-| **Precision** | **0,526** | Dos preditos como churn, quantos de fato cancelam — trade-off com recall. |
-| **F1** | **0,631** | Equilíbrio precision/recall. |
+| **ROC-AUC** | **0,8496** | Discriminação geral entre classes. |
+| **PR-AUC** | **0,6686** | Adequada com classe churn minoritária. |
+| **Recall** | **0,8449** | Proporção de churners reais identificados (alto recall costuma ser prioridade em retenção). |
+| **F1** | **0,6118** | Equilíbrio precision/recall. |
 
-**MLflow — run ID (referência):** `be590f20495245a49044a6561f053afa`.
+**MLflow — run ID (referência):** `72a5d812b0ca4831892cb2fe4b5e10d7`.
 
 **Baselines:** experimento MLflow `churn-baselines` — DummyClassifier, Regressão Logística, Decision Tree, Random Forest, Gradient Boosting; validação cruzada estratificada e métricas de teste conforme `src/models/trainBaseline.py`.
 
@@ -84,7 +83,7 @@ Valores da **última run** consultada no experimento **`churn-mlp`** (métricas 
 
 - **Seed:** `12` em `src/models/trainMlp.py` (`FIXED_SEED`).  
 - **Hiperparâmetros MLP:** `lr=0,01`, `batch_size=64`, `patience=10`, `max_epochs=100`, `hidden_dims=[64,32,16]`, `dropout_rate=0,3` — todos logados no MLflow.  
-- **Comando:** na pasta `churn-prediction-ml/`, com venv ativo: `python -m src.models.trainMlp`.
+- **Comando:** na pasta raiz do projeto `churn-prediction-ml/`, com venv ativo: `python -m src.models.trainMlp`.
 
 ---
 

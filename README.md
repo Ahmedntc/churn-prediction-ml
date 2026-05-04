@@ -38,8 +38,6 @@ churn-prediction-ml/
 ```
 
 ## Documentação (Etapa 4 — entrega final)
-
-- **[Passo a passo do que falta](docs/PASSO_A_PASSO_ETAPA_4.md)** — checklist em português (Brasil) para fechar a entrega.
 - **[Model Card](docs/MODEL_CARD.md)** — desempenho, limitações, vieses e cenários de falha.
 - **[Arquitetura de deploy](docs/ARQUITETURA_DEPLOY.md)** — batch vs. tempo real e justificativa.
 - **[Plano de monitoramento](docs/MONITORAMENTO.md)** — métricas, alertas e playbook.
@@ -48,60 +46,87 @@ churn-prediction-ml/
 
 Dados em `dataframe/` → pré-processamento e treino em `src/` → artefatos em `modeldumps/` (não versionados) e experimentos no **MLflow** → inferência **em tempo real** via **FastAPI** (`churn_prediction.api.main`). Detalhes em [docs/ARQUITETURA_DEPLOY.md](docs/ARQUITETURA_DEPLOY.md).
 
-## Como rodar o projeto
+## Setup
 
-Execute os comandos na **raiz** do repositório (`churn-prediction-ml/`, onde está o `pyproject.toml`).
+### Pré-requisitos
 
-1. **Criar ambiente virtual**
+- Python 3.10+
+- GPU com CUDA (opcional, mas recomendado para o treinamento da MLP)
 
-   ```bash
-   python -m venv .venv
-   ```
+### Instalação
 
-2. **Ativar o ambiente**
-
-   - Windows (PowerShell): `.venv\Scripts\Activate.ps1`
-   - Linux/macOS: `source .venv/bin/activate`
-
-3. **Instalar dependências**
-
-   ```bash
-   pip install -e ".[dev]"
-   ```
-
-   Se a instalação falhar ao gerar bytecode no Windows, use: `pip install -e ".[dev]" --no-compile`.
-
-4. **Gerar o modelo servido pela API** (arquivos `.joblib` ficam em `modeldumps/` e não vão para o Git):
-
-   ```bash
-   python -m src.models.trainBaseline
-   python -m src.models.trainMlp
-   ```
-
-## Testes
-
+**1. Clone o repositório**
 ```bash
-pytest -v
+git clone https://github.com/Ahmedntc/churn-prediction-ml
+cd churn-prediction-ml
 ```
 
-Resultado esperado: **6 passed** (na raiz do projeto).
+**2. Crie e ative o ambiente virtual**
 
-## MLflow
+Linux/Mac:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
+Windows:
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+**3. Instale as dependências**
+```bash
+make install
+```
+
+## Execução
+
+> ⚠️ Sempre ative o ambiente virtual antes de rodar qualquer comando `make`.
+
+### Treinar os modelos baseline
+```bash
+make train-baselines
+```
+Treina DummyClassifier, Regressão Logística, Decision Tree, Random Forest e Gradient Boosting. Todos os experimentos são registrados automaticamente no MLflow.
+
+### Treinar a MLP
+```bash
+make train-mlp
+```
+Treina a rede neural MLP com PyTorch com os melhores hiperparâmetros encontrados (batch_size=64, lr=0.01, patience=10). O experimento é registrado no MLflow.
+
+### Visualizar experimentos no MLflow
 ```bash
 mlflow ui
 ```
+Acesse `http://localhost:5000` no browser para visualizar todos os experimentos, métricas e artefatos.
 
-Abra no navegador: http://localhost:5000
-
-## API de inferência
-
-Na raiz do projeto, com o ambiente ativado:
-
+### Rodar os testes
 ```bash
-uvicorn churn_prediction.api.main:app --reload
+make test
 ```
 
+### Verificar linting
+```bash
+make lint
+```
+### Todos os passos anteriores
+```bash
+make all
+```
+
+### Subir a API
+```bash
+make run
+```
+A API estará disponível em `http://localhost:8000`.
+
+### Fazer uma requisição de exemplo
+Em outro terminal com a API rodando:
+```bash
+make request
+```
 ## Endpoints
 
 | Método | Caminho | Descrição |
@@ -142,14 +167,6 @@ Documentação interativa (Swagger): http://127.0.0.1:8000/docs
   "Total Charges": 1024.5
 }
 ```
-
-## Entrega — vídeo (obrigatório)
-
-1. Grave o vídeo de **até 5 minutos** usando o método **STAR** (Situação, Tarefa, Ação, Resultado), conforme o enunciado do Tech Challenge.
-2. Publique em plataforma de sua escolha (YouTube não listado, Google Drive, Loom, etc.).
-3. **Cole o link aqui no README** (substitua o texto abaixo) e/ou coloque na descrição do repositório no GitHub:
-
-**Link do vídeo:** *[inserir URL]*
 
 ## Entrega opcional (bônus)
 
